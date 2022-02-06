@@ -16,7 +16,7 @@ spec:
         app: techtrends
     spec:
       containers:
-        - image: lmidy/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+        - image: lynettemidy/{{ .Values.image.repository }}:{{ .Values.image.tag }}
           name: techtrends
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
@@ -34,4 +34,4 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 5
           resources:
-  {{ toYaml .Values.resources | indent 12 }}
+  {{ toYaml .Values.resources | indent 10 }}
