@@ -1,7 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
   labels:
     app: techtrends
   name: techtrends
@@ -11,31 +10,28 @@ spec:
   selector:
     matchLabels:
       app: techtrends
-      tag: latest
-  strategy:
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
   template:
     metadata:
       labels:
         app: techtrends
     spec:
       containers:
-        - image: lynettemidy/{{ .Values.image.repository }}:{{ .Values.image.tag }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+        - image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           name: techtrends
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.containerPort }}
-              protocol: TCP
           livenessProbe:
             httpGet:
               path: {{ .Values.livenessProbe.path }}
-              port: 3111
+              port: {{ .Values.livenessProbe.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
           readinessProbe:
             httpGet:
               path: {{ .Values.readinessProbe.path }}
-              port: {{ .Values.containerPort }}
+              port: {{ .Values.readinessProbe.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
           resources:
-            {{ toYaml .Values.resources | indent 12 }}
+  {{ toYaml .Values.resources | indent 12 }}
