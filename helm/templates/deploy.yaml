@@ -10,6 +10,11 @@ spec:
   selector:
     matchLabels:
       app: techtrends
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
   template:
     metadata:
       labels:
@@ -17,20 +22,21 @@ spec:
     spec:
       containers:
         - image: lynettemidy/{{ .Values.image.repository }}:{{ .Values.image.tag }}
-          name: techtrends
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          name: techtrends
           ports:
             - containerPort: {{ .Values.containerPort }}
+              protocol: TCP
           livenessProbe:
             httpGet:
               path: {{ .Values.livenessProbe.path }}
-              port: {{ .Values.livenessProbe.port }}
+              port: {{ .Values.containerPort }}
             initialDelaySeconds: 5
             periodSeconds: 5
           readinessProbe:
             httpGet:
               path: {{ .Values.readinessProbe.path }}
-              port: {{ .Values.readinessProbe.port }}
+              port: {{ .Values.containerPort }}
             initialDelaySeconds: 5
             periodSeconds: 5
           resources:
