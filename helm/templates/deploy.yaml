@@ -40,4 +40,4 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 5
           resources:
-  {{ toYaml .Values.resources | indent 10 }}
+  {{ toYaml .Values.resources | indent 14 }}
