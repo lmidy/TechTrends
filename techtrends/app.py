@@ -15,7 +15,7 @@ def get_db_connection():
     global connection_count
     connection = sqlite3.connect('database.db')
     connection.row_factory = sqlite3.Row
-    connection_count = + 1
+    connection_count += 1
     return connection
 
 
@@ -48,17 +48,17 @@ def index():
 def post(post_id):
     post = get_post(post_id)
     if post is None:
-        log_message('Article with id "{id}" is non existent!'.format(id=post_id))
+        logger.error('Article with id %s is non existent!', post_id)
         return render_template('404.html'), 404
     else:
-        log_message('Article "{title}" retrieved!'.format(title=post['title']))
+        logger.info('Article "{title}" retrieved!'.format(title=post['title']))
         return render_template('post.html', post=post)
 
 
 # Define the About Us page
 @app.route('/about')
 def about():
-    log_message('About Us page retrieved!')
+    logger.info('About Us page retrieved!')
     return render_template('about.html')
 
 
@@ -77,7 +77,7 @@ def create():
                                (title, content))
             connection.commit()
             connection.close()
-            log_message('Article "{title}" created!'.format(title=title))
+            logger.info('Article "{title}" created!'.format(title=title))
             return redirect(url_for('index'))
 
     return render_template('create.html')
@@ -92,6 +92,7 @@ def health():
         connection.close()
         return {'result': 'OK - healthy'}, 200
     except Exception:
+        logger.exception('Hitting healthz endpoint unavailable')
         return {'result': 'NOT OK - unhealthy'}, 500
 
 
@@ -106,13 +107,20 @@ def metrics():
     return data
 
 
-# define log format for log messages
-def log_message(msg):
-    app.logger.info('{time} | {message}'.format(time=datetime.now().strftime("%m/%d/%Y, %H:%M:%s"), message=msg))
-
-
 # start the application on port 3111
 if __name__ == "__main__":
-    # add logging
-    logging.basicConfig(level=logging.DEBUG)
+    logger = logging.getLogger('created my own logger')
+    # create console handler and set level to info
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.INFO)
+
+    # create formatter
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    # add formatters to our handlers
+    stream_handler.setFormatter(formatter)
+
+    # add Handlers to our logger
+    logger.addHandler(stream_handler)
+
     app.run(host='0.0.0.0', port='3111')
