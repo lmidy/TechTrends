@@ -48,17 +48,17 @@ def index():
 def post(post_id):
     post = get_post(post_id)
     if post is None:
-        logging.error('Article with id %s is non existent!', post_id)
+        app.logger.error('Article with id %s is non existent!', post_id)
         return render_template('404.html'), 404
     else:
-        logging.info('Article "{title}" retrieved!'.format(title=post['title']))
+        app.logger.info('Article "{title}" retrieved!'.format(title=post['title']))
         return render_template('post.html', post=post)
 
 
 # Define the About Us page
 @app.route('/about')
 def about():
-    logging.info('About Us page retrieved!')
+    app.logger.info('About Us page retrieved!')
     return render_template('about.html')
 
 
@@ -77,7 +77,7 @@ def create():
                                (title, content))
             connection.commit()
             connection.close()
-            logging.info('Article "{title}" created!'.format(title=title))
+            app.logger.info('Article "{title}" created!'.format(title=title))
             return redirect(url_for('index'))
 
     return render_template('create.html')
@@ -92,7 +92,7 @@ def health():
         connection.close()
         return {'result': 'OK - healthy'}, 200
     except Exception:
-        logging.exception('Hitting healthz endpoint unavailable')
+        app.logger.exception('Hitting healthz endpoint unavailable')
         return {'result': 'NOT OK - unhealthy'}, 500
 
 
@@ -100,10 +100,11 @@ def health():
 @app.route('/metrics')
 def metrics():
     connection = get_db_connection()
-    posts = connection.execute('SELECT COUNT(id) FROM posts').fetchone()
+    posts = connection.execute('SELECT * FROM posts').fetchall()
     connection.close()
     post_count = len(posts)
     data = {"db_connection_count": connection_count, "post_count": post_count}
+    app.logger.info('Metrics requests successful')
     return data
 
 
