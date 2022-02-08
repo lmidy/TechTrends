@@ -3,7 +3,6 @@ import sqlite3
 from flask import Flask, jsonify, json, render_template, request, url_for, redirect, flash
 from werkzeug.exceptions import abort
 import logging
-from datetime import datetime
 
 # variable for count of all db connections
 connection_count = 0
@@ -48,17 +47,17 @@ def index():
 def post(post_id):
     post = get_post(post_id)
     if post is None:
-        logger.error('Article with id %s is non existent!', post_id)
+        logging.error('Article with id %s is non existent!', post_id)
         return render_template('404.html'), 404
     else:
-        logger.info('Article "{title}" retrieved!'.format(title=post['title']))
+        logging.info('Article "{title}" retrieved!'.format(title=post['title']))
         return render_template('post.html', post=post)
 
 
 # Define the About Us page
 @app.route('/about')
 def about():
-    logger.info('About Us page retrieved!')
+    logging.info('About Us page retrieved!')
     return render_template('about.html')
 
 
@@ -77,7 +76,7 @@ def create():
                                (title, content))
             connection.commit()
             connection.close()
-            logger.info('Article "{title}" created!'.format(title=title))
+            logging.info('Article "{title}" created!'.format(title=title))
             return redirect(url_for('index'))
 
     return render_template('create.html')
@@ -92,7 +91,7 @@ def health():
         connection.close()
         return {'result': 'OK - healthy'}, 200
     except Exception:
-        logger.exception('Hitting healthz endpoint unavailable')
+        logging.exception('Hitting healthz endpoint unavailable')
         return {'result': 'NOT OK - unhealthy'}, 500
 
 
@@ -109,18 +108,5 @@ def metrics():
 
 # start the application on port 3111
 if __name__ == "__main__":
-    logger = logging.getLogger('created my own logger')
-    # create console handler and set level to info
-    stream_handler = logging.StreamHandler()
-    stream_handler.setLevel(logging.INFO)
-
-    # create formatter
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-    # add formatters to our handlers
-    stream_handler.setFormatter(formatter)
-
-    # add Handlers to our logger
-    logger.addHandler(stream_handler)
-
+    logging.basicConfig(level=logging.DEBUG)
     app.run(host='0.0.0.0', port='3111')
