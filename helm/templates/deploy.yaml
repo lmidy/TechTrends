@@ -26,7 +26,7 @@ spec:
           name: techtrends
           ports:
             - containerPort: {{ .Values.containerPort }}
-              protocol: TCP
+              protocol: {{ .Values.service.protocol}}
           livenessProbe:
             httpGet:
               path: {{ .Values.livenessProbe.path }}
@@ -36,9 +36,9 @@ spec:
               path: {{ .Values.readinessProbe.path }}
               port: {{ .Values.containerPort }}
           resources:
-            limits:
-              cpu: 500m
-              memory: 128Mi
             requests:
-              cpu: 250m
-              memory: 64Mi
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
