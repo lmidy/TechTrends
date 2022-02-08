@@ -31,14 +31,10 @@ spec:
           httpGet:
             path: {{ .Values.livenessProbe.path }}
             port: {{ .Values.containerPort }}
-            initialDelaySeconds: 5
-            periodSeconds: 5
         readinessProbe:
           httpGet:
             path: {{ .Values.readinessProbe.path }}
             port: {{ .Values.containerPort }}
-            initialDelaySeconds: 5
-            periodSeconds: 5
         resources:
           requests:
             cpu: "250m"
