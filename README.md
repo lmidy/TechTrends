@@ -63,4 +63,4 @@ docker run -d --name techtrends -p HOST_PORT:3111 lynettemidy/techtrends
 ### Screenshot of TechTrends Running
 
 
-![TechTrends running on localhost!](screenshots/techtrends-running.png)
+![TechTrends running on localhost!](https://github.com/lmidy/TechTrends/blob/main/screenshots/TechTrends-Running.png)
